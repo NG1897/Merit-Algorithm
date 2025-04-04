@@ -1,0 +1,6 @@
+Name,GPA,EconomicStatus,SchoolBoard,SetbackFlag,InternshipExp,ProjectsScore,LeadershipScore,MisdemeanorSeverity
+Student_1,9.2,Low,StateBoard,True,True,0.8,0.6,0.0
+Student_2,8.5,Medium,CBSE,False,True,0.7,0.5,0.0
+Student_3,9.8,High,ICSE,False,True,0.9,0.8,1.0
+Student_4,7.4,Low,StateBoard,True,False,0.6,0.3,0.0
+Student_5,8.9,Medium,StateBoard,True,True,0.7,0.7,0.0
