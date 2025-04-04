@@ -22,7 +22,16 @@ import pandas as pd
 
 st.title("FairRank: Merit-Based Hiring with Context")
 
-uploaded_file = st.file_uploader("Upload your student dataset CSV", type="csv")
+import pandas as pd
+
+# Use your actual raw GitHub CSV URL here
+CSV_URL = "https://raw.githubusercontent.com/NG1897/Merit-Algorithm/main/student_data.csv"
+
+@st.cache_data
+def load_data():
+    return pd.read_csv(CSV_URL)
+
+df = load_data()
 
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
