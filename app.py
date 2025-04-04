@@ -1,4 +1,60 @@
+import streamlit as st
 import pandas as pd
+
+st.set_page_config(page_title="FairRank", layout="wide")
+st.title("FairRank: Merit-Based Hiring with Context")
+
+# STEP 1: Load data from GitHub raw CSV
+CSV_URL = "https://raw.githubusercontent.com/NG1897/Merit-Algorithm/main/student_data.csv"
+
+@st.cache_data
+def load_data():
+    return pd.read_csv(CSV_URL)
+
+try:
+    df = load_data()
+except Exception as e:
+    st.error(f"Failed to load CSV from GitHub: {e}")
+    st.stop()
+
+# STEP 2: Define scoring weights
+GPA_WEIGHT = 0.50
+PROJECT_WEIGHT = 0.25
+LEADERSHIP_WEIGHT = 0.15
+INTERNSHIP_BONUS = 0.05
+MISDEMEANOR_PENALTY = 0.05  # Per severity point
+
+def compute_merit(row):
+    base_score = (
+        row['GPA'] * GPA_WEIGHT +
+        row['ProjectsScore'] * PROJECT_WEIGHT +
+        row['LeadershipScore'] * LEADERSHIP_WEIGHT +
+        (INTERNSHIP_BONUS if row['InternshipExp'] else 0)
+    )
+
+    # Contextual boosts
+    econ_boost = 0.10 if row['EconomicStatus'] == 'Low' else 0.05 if row['EconomicStatus'] == 'Medium' else 0.0
+    board_boost = 0.05 if row['SchoolBoard'] == 'StateBoard' else 0.0
+    setback_boost = 0.15 if row['SetbackFlag'] else 0.0
+
+    # Misdemeanor penalty
+    penalty = MISDEMEANOR_PENALTY * row['MisdemeanorSeverity']
+
+    final_score = base_score * (1 + econ_boost + board_boost + setback_boost) * (1 - penalty)
+    return final_score
+
+# STEP 3: Apply scoring and rank
+df['MeritScore'] = df.apply(compute_merit, axis=1)
+df['Rank'] = df['MeritScore'].rank(ascending=False, method='first').astype(int)
+df = df.sort_values(by='MeritScore', ascending=False)
+
+# STEP 4: Display results
+st.subheader("Final Ranked Students")
+st.dataframe(df.reset_index(drop=True), use_container_width=True)
+
+# Optional: Highlight top 5
+st.subheader("Top 5 Candidates")
+st.table(df[['Name', 'MeritScore', 'Rank']].head(5)) pandas as pd
 import numpy as np
 
 np.random.seed(42)
